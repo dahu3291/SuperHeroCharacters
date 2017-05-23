@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="character_list">
+        <item name="spider-man">spider-man</item>
+        <item name="hulk">hulk</item>
+        <item name="thor">thor</item>
+        <item name="iron_man">iron man</item>
+        <item name="daredevil">daredevil</item>
+        <item name="wolverine">wolverine</item>
+        <item name="luke_cage">luke cage</item>
+        <item name="black_widow">black widow</item>
+    </array>
+</resources>
