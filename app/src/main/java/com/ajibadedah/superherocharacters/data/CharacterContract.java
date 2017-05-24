@@ -14,18 +14,21 @@ public class CharacterContract {
 
     public static final class CharacterEntry implements BaseColumns {
 
-        static final String TABLE_NAME = "character";
-
         public static final String COLUMN_CHARACTER_ID = "character_id";
         public static final String COLUMN_CHARACTER_NAME = "name";
         public static final String COLUMN_CHARACTER_BIO = "bio";
         public static final String COLUMN_CHARACTER_THUMBNAIL = "thumbnail";
         public static final String COLUMN_CHARACTER_RESOURECE = "resource";
         public static final String COLUMN_CHARACTER_COMICS = "comics";
-
+        static final String TABLE_NAME = "character";
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
                 .appendPath(TABLE_NAME)
                 .build();
+
+        /** Matches: /items/[_id]/ */
+        public static Uri buildItemUri(String _id) {
+            return CONTENT_URI.buildUpon().appendPath(_id).build();
+        }
 
     }
 

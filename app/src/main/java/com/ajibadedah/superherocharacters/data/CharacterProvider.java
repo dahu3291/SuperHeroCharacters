@@ -32,7 +32,7 @@ public class CharacterProvider extends ContentProvider {
         //Match for Character table
         matcher.addURI(CharacterContract.CONTENT_AUTHORITY, CharacterEntry.TABLE_NAME, CODE_CHARACTER);
         matcher.addURI(CharacterContract.CONTENT_AUTHORITY,
-                CharacterEntry.TABLE_NAME + "/*", CODE_CHARACTER_WITH_ID);
+                CharacterEntry.TABLE_NAME + "/#", CODE_CHARACTER_WITH_ID);
 
         return matcher;
     }
@@ -56,7 +56,7 @@ public class CharacterProvider extends ContentProvider {
                 break;
 
             case CODE_CHARACTER_WITH_ID:
-                selection = CharacterEntry.COLUMN_CHARACTER_ID + " = ? ";
+                selection = CharacterEntry._ID + " = ? ";
                 selectionArgs = new String[]{uri.getLastPathSegment()};
                 cursor = db.query(CharacterEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
@@ -109,7 +109,7 @@ public class CharacterProvider extends ContentProvider {
                 break;
 
             case CODE_CHARACTER_WITH_ID:
-                selection = CharacterEntry.COLUMN_CHARACTER_ID + " = ? ";
+                selection = CharacterEntry._ID + " = ? ";
                 selectionArgs = new String[]{uri.getLastPathSegment()};
                 num = db.delete(CharacterEntry.TABLE_NAME, selection, selectionArgs);
                 break;
@@ -133,7 +133,7 @@ public class CharacterProvider extends ContentProvider {
 
         switch (matcher.match(uri)) {
             case CODE_CHARACTER_WITH_ID:
-                selection = CharacterEntry.COLUMN_CHARACTER_ID + " = ? ";
+                selection = CharacterEntry._ID + " = ? ";
                 selectionArgs = new String[]{uri.getLastPathSegment()};
                 index = db.update(CharacterEntry.TABLE_NAME, contentValues,selection, selectionArgs);
                 break;

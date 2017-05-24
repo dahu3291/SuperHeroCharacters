@@ -77,16 +77,18 @@ public class Comic{
             JsonArray urls = comicJson.getAsJsonArray("urls");
             String type;
             String resultUrl = "";
-            for (JsonElement element : urls) {
-                type = element.getAsJsonObject().get("type").getAsString();
-                if (type.equals("detail")) {
-                    resultUrl = element.getAsJsonObject().get("url").getAsString();
+            if (urls != null) {
+                for (JsonElement element : urls) {
+                    type = element.getAsJsonObject().get("type").getAsString();
+                    if (type.equals("detail")) {
+                        resultUrl = element.getAsJsonObject().get("url").getAsString();
+                    }
                 }
+                if (resultUrl.equals("")) {
+                    resultUrl = "http://marvel.com";
+                }
+                comic.setResourceUrl(resultUrl);
             }
-            if (resultUrl.equals("")){
-                resultUrl = "http://marvel.com";
-            }
-            comic.setResourceUrl(resultUrl);
 
             return comic;
         }
