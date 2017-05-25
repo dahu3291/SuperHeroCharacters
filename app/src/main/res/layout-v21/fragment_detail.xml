@@ -25,17 +25,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|fill_vertical"
+        android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
             <com.ajibadedah.superherocharacters.CustomImageView
                 android:id="@+id/detail_thumbnail"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
+                android:layout_alignParentTop="true"
                 android:contentDescription="@string/character_image_description"
                 android:scaleType="centerCrop"
                 tools:src="@mipmap/ic_launcher" />
@@ -45,6 +46,7 @@
                 style="@style/TextAppearance.AppCompat.Subhead"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/detail_thumbnail"
                 android:layout_marginEnd="@dimen/default_margin"
                 android:layout_marginStart="@dimen/default_margin"
                 android:layout_marginTop="@dimen/default_margin"
@@ -55,6 +57,7 @@
                 style="@style/TextAppearance.AppCompat.Body1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/detail_name"
                 android:layout_marginBottom="@dimen/default_margin"
                 android:layout_marginEnd="@dimen/default_margin"
                 android:layout_marginStart="@dimen/default_margin"
@@ -65,10 +68,11 @@
                 android:id="@+id/comic_list_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/bio"
                 android:scrollbarStyle="outsideOverlay">
             </android.support.v7.widget.RecyclerView>
 
-        </LinearLayout>
+        </RelativeLayout>
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton

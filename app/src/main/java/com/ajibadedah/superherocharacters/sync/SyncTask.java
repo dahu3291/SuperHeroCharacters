@@ -65,7 +65,8 @@ public class SyncTask {
             String id = character.getId();
 
             Call<Data> comicCall =  NetworkUtil.getComicApi().
-                    getComics(id, "5", String.valueOf(md5Hash.getTimeStamp()), md5Hash.getApiKey(),
+                    getComics(id, context.getResources().getString(R.string.comic_number_limit),
+                            String.valueOf(md5Hash.getTimeStamp()), md5Hash.getApiKey(),
                             md5Hash.getHashSignature());
             ArrayList<Comic> comics = new ArrayList<>();
             comics = comicCall.execute().body().getComics();

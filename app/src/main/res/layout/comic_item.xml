@@ -4,19 +4,23 @@
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <ImageView
+    <com.ajibadedah.superherocharacters.CustomImageView
         android:id="@+id/thumbnail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginEnd="@dimen/default_margin"
         android:layout_marginStart="@dimen/default_margin"
         android:contentDescription="@string/character_image_description"
+        android:scaleType="centerCrop"
         tools:src="@mipmap/ic_launcher"/>
 
     <TextView
         android:id="@+id/comic_name"
+        style="@style/TextAppearance.AppCompat.Body1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/default_margin"
         android:layout_marginEnd="@dimen/default_margin"
         android:layout_marginStart="@dimen/default_margin"
         tools:text="Superhero"/>

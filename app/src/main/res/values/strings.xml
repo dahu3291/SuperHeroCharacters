@@ -5,6 +5,10 @@
     <string name="content_authority">com.ajibadedah.superherocharacters</string>
     <string name="title_activity_detail">DetailActivity</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_chat">ChatActivity</string>
+    <string name="send_button_label">SEND</string>
+    <string name="image_in_chat">Image in chat</string>
+    <string name="sign_out">Sign Out</string>
+
+    <string name="comic_number_limit">10</string>
 </resources>
