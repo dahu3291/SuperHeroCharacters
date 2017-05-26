@@ -183,7 +183,7 @@ public class ChatActivity extends AppCompatActivity {
         if (mAuthStateListener != null) {
             mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
         }
-        mChatAdapter.cleanup();
+        if (mChatAdapter != null)mChatAdapter.cleanup();
         detachDatabaseReadListener();
     }
 
@@ -246,7 +246,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void onSignedOutCleanup() {
         mUsername = ANONYMOUS;
-        mChatAdapter.cleanup();
+        if (mChatAdapter != null)mChatAdapter.cleanup();
         detachDatabaseReadListener();
     }
 

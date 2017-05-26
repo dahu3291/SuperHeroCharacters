@@ -1,11 +1,19 @@
 package com.ajibadedah.superherocharacters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Point;
+import android.transition.TransitionManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Slide;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,15 +29,30 @@ import java.util.ArrayList;
 
 public class ComicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
+    private static final int ANIMATED_ITEMS_COUNT = 2;
+    private static int screenWidth = 0;
+    private int lastAnimatedPosition = -1;
     private ArrayList<Comic> mComics;
     private Context mContext;
-    private CharacterComicAdapter.AdapterClickListener mAdapterItemListener;
+    private ComicAdapter.AdapterClickListener mAdapterItemListener;
 
-    public ComicAdapter(Context context, CharacterComicAdapter.AdapterClickListener listener,
+    public ComicAdapter(Context context, ComicAdapter.AdapterClickListener listener,
                         ArrayList<Comic> comics){
         mContext = context;
         mAdapterItemListener = listener;
         this.mComics = comics;
+    }
+
+    public static int getScreenHeight(Context c) {
+        if (screenWidth == 0) {
+            WindowManager wm = (WindowManager) c.getSystemService(Context.WINDOW_SERVICE);
+            Display display = wm.getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            screenWidth = size.y;
+        }
+
+        return screenWidth;
     }
 
     @Override
@@ -49,7 +72,6 @@ public class ComicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (mComics != null) {
             if (mComics.size() > 0) {
-
                 ComicAdapterViewHolder comicHolder = (ComicAdapterViewHolder) holder;
                 comicHolder.bind(position);
 
@@ -61,8 +83,9 @@ public class ComicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     public int getItemCount() {
         return mComics != null ? mComics.size() : 0;
     }
+
     public interface AdapterClickListener{
-        void ItemClicked(int id);
+        void ItemClicked(View view, String imageName, String imageUrl);
     }
 
 //    @Override
@@ -78,9 +101,12 @@ public class ComicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 //        notifyDataSetChanged();
 //    }
 
-    public class ComicAdapterViewHolder extends RecyclerView.ViewHolder {
+    public class ComicAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener{
         ImageView thumbnail;
         TextView name;
+
+        String url;
+        String imageName;
 
         public ComicAdapterViewHolder(View itemView) {
             super(itemView);
@@ -90,24 +116,22 @@ public class ComicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         }
 
         void bind(int postion){
-            String nameText = mComics.get(postion).getTitle();
-            name.setText(nameText);
+            imageName = mComics.get(postion).getTitle();
+            name.setText(imageName);
 
-            String url = mComics.get(postion).getThumbnail().getFullUrl();
+            url = mComics.get(postion).getThumbnail().getFullUrl();
             Picasso.with(mContext).load(url).into(thumbnail);
 
-//            itemView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    int i = getAdapterPosition();
-//                    mCursor.moveToPosition(i);
-//
-//                    int charId = mCursor.getInt(mCursor.getColumnIndex(
-//                            CharacterContract.CharacterEntry._ID));
-//                    mAdapterItemListener.ItemClicked(charId);
-//                }
-//            });
 
+
+            itemView.setOnLongClickListener(this);
+
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            mAdapterItemListener.ItemClicked(thumbnail, imageName, url);
+            return false;
         }
     }
 }

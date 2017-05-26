@@ -2,7 +2,10 @@ package com.ajibadedah.superherocharacters;
 
 
 import android.content.Intent;
-import android.os.Build;
+import android.graphics.Rect;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
@@ -14,10 +17,14 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Slide;
+import android.transition.TransitionManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -38,7 +45,7 @@ import java.util.ArrayList;
  */
 public class DetailFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>, View.OnLongClickListener,
-        CharacterComicAdapter.AdapterClickListener{
+        ComicAdapter.AdapterClickListener{
 
     public static final String ARG_ITEM_ID = "item_id";
     public static final String ARG_ON_LONG_CLICK_TEXT = "arg_on_long_click_text";
@@ -50,24 +57,31 @@ public class DetailFragment extends Fragment
     private Cursor mCursor;
     private String mItemId;
     private View mRootView;
+    private ImageView mThumbnail;
+    private TextView mNameView;
     private ComicAdapter mComicAdapter;
 
     private String onLongClickText;
-    private String onLongClickUrl;
+    private String onLongClickImageUrl;
+    private String onLongClickImageName;
 
 
     public DetailFragment() {
         // Required empty public constructor
     }
 
-    public static DetailFragment newInstance(int itemId, int position, int startingPosition) {
+    public static DetailFragment newInstance(int itemId) {
         Bundle arguments = new Bundle();
         arguments.putString(ARG_ITEM_ID, String.valueOf(itemId));
-        arguments.putInt(ARG_CHARACTER_POSITION, position);
-        arguments.putInt(ARG_STARTING_CHARACTER_POSITION, startingPosition);
         DetailFragment fragment = new DetailFragment();
         fragment.setArguments(arguments);
         return fragment;
+    }
+
+    private static boolean isViewInBounds(@NonNull View container, @NonNull View view) {
+        Rect containerBounds = new Rect();
+        container.getHitRect(containerBounds);
+        return view.getLocalVisibleRect(containerBounds);
     }
 
     @Override
@@ -94,21 +108,30 @@ public class DetailFragment extends Fragment
     public DetailActivity getActivityCast() {
         return (DetailActivity) getActivity();
     }
+
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         mRootView = inflater.inflate(R.layout.fragment_detail, container, false);
+        mThumbnail = (ImageView) mRootView.findViewById(R.id.detail_thumbnail);
+        mNameView = (TextView) mRootView.findViewById(R.id.detail_name);
 
-        Toolbar toolbar = (Toolbar) mRootView.findViewById(R.id.toolbar);
-        getActivityCast().setSupportActionBar(toolbar);
+        String newTransitionName = getString(R.string.transition_photo) + String.valueOf(mItemId);
+        mThumbnail.setTransitionName(newTransitionName);
+
+        newTransitionName = getString(R.string.transition_photo) + String.valueOf(mItemId);
+        mNameView.setTransitionName(newTransitionName);
+
+//        Toolbar toolbar = (Toolbar) mRootView.findViewById(R.id.toolbar);
+//        getActivityCast().setSupportActionBar(toolbar);
+
         FloatingActionButton fab = (FloatingActionButton) mRootView.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 Intent intent = new Intent(getActivityCast(), ChatActivity.class);
-//                intent.putExtra(ARG_ON_LONG_CLICK_TEXT, onLongClickText);
                 startActivity(intent);
             }
         });
@@ -121,8 +144,7 @@ public class DetailFragment extends Fragment
         if (mRootView == null) {
             return;
         }
-        CustomImageView thumbnail = (CustomImageView) mRootView.findViewById(R.id.detail_thumbnail);
-        TextView nameView = (TextView) mRootView.findViewById(R.id.detail_name);
+
         TextView bioView = (TextView) mRootView.findViewById(R.id.bio);
 
         if (mCursor != null) {
@@ -135,21 +157,28 @@ public class DetailFragment extends Fragment
             index = mCursor.getColumnIndex(CharacterEntry.COLUMN_CHARACTER_BIO);
             String bio = mCursor.getString(index);
 
-            Picasso.with(mRootView.getContext()).load(url).into(thumbnail);
-            String description = "Image of " + name;
-            thumbnail.setCustomUrl(mCursor.getString(index));
-            thumbnail.setCustomImageName(description);
-            thumbnail.setOnLongClickListener(this);
+            Picasso.with(mRootView.getContext()).load(url).into(mThumbnail);
 
-            nameView.setText(name);
-            nameView.setOnLongClickListener(this);
+            onLongClickImageUrl = mCursor.getString(index);
+            onLongClickImageName = "Image of " + name;
+            mThumbnail.setOnLongClickListener(this);
+
+            mNameView.setText(name);
+            mNameView.setOnLongClickListener(this);
 
             bioView.setText(bio);
             bioView.setOnLongClickListener(this);
+
+            Slide slide = new Slide();
+            slide.setSlideEdge(Gravity.BOTTOM);
+            slide.setDuration(700);
+
+//            ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
+            TransitionManager.beginDelayedTransition((ViewGroup) mRootView, slide);
         }
 
-
     }
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(getActivity(), CharacterEntry.buildItemUri(mItemId), null,
@@ -165,6 +194,8 @@ public class DetailFragment extends Fragment
             mCursor.close();
             mCursor = null;
         }
+
+
 
         if (mCursor != null) {
 
@@ -185,11 +216,19 @@ public class DetailFragment extends Fragment
             GridLayoutManager layoutManager =
                     new GridLayoutManager(mRootView.getContext(), 2, GridLayoutManager.VERTICAL, false);
             RecyclerView recyclerView = (RecyclerView) mRootView.findViewById(R.id.comic_list_recycler);
-            recyclerView.setHasFixedSize(false);
-            recyclerView.setNestedScrollingEnabled(false);
             recyclerView.setAdapter(mComicAdapter);
             recyclerView.setLayoutManager(layoutManager);
         }
+
+        mThumbnail.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                mThumbnail.getViewTreeObserver().removeOnPreDrawListener(this);
+//                ActivityCompat.startPostponedEnterTransition(getActivity());
+                getActivityCast().startPostponedEnterTransition();
+                return true;
+            }
+        });
         bindViews();
     }
 
@@ -204,46 +243,65 @@ public class DetailFragment extends Fragment
     }
 
     @Override
-    public void ItemClicked(int id) {
-
+    public void ItemClicked(View view, String imageName, String imageUrl) {
+        FirebaseChat(view, imageName, imageUrl, null);
     }
 
     @Override
-    public boolean onLongClick(View v) {
-        if (v instanceof CustomImageView) {
-            CustomImageView thumbnail = (CustomImageView) v;
-            onLongClickUrl = thumbnail.getCustomUrl();
-            Snackbar.make(v, "Chat about " + thumbnail.getCustomImageName(), Snackbar.LENGTH_LONG)
-                    .setAction("YES",  new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent(getActivityCast(), ChatActivity.class);
-                            intent.putExtra(ARG_ON_LONG_CLICK_URL, onLongClickUrl);
-                            startActivity(intent);
-                        }
-                    })
-                    .show();
-        } else {
-            onLongClickUrl = "";
-        }
-
-        if(v instanceof TextView){
-            TextView text = (TextView) v;
-            onLongClickText = text.getText().toString();
-            Snackbar.make(v, "Chat about " + onLongClickText, Snackbar.LENGTH_LONG)
-                    .setAction("YES",  new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent(getActivityCast(), ChatActivity.class);
-                            intent.putExtra(ARG_ON_LONG_CLICK_TEXT, onLongClickText);
-                            startActivity(intent);
-                        }
-                    })
-                    .show();
-
-        } else {
-            onLongClickText = "";
-        }
+    public boolean onLongClick(View view) {
+        FirebaseChat(view, onLongClickImageName, onLongClickImageUrl, onLongClickText);
         return false;
+    }
+
+    public void FirebaseChat(View view, String imageName, final String imageUrl, final String textName){
+
+        if (view instanceof ImageView) {
+            Snackbar.make(view, "Chat about " + imageName, Snackbar.LENGTH_LONG)
+                    .setAction("YES",  new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(getActivityCast(), ChatActivity.class);
+                            intent.putExtra(ARG_ON_LONG_CLICK_URL, imageUrl);
+                            startActivity(intent);
+                        }
+                    })
+                    .show();
+        }
+
+        if(view instanceof TextView){
+            TextView text = (TextView) view;
+            onLongClickText = text.getText().toString();
+            Snackbar.make(view, "Chat about " + textName, Snackbar.LENGTH_LONG)
+                    .setAction("YES",  new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(getActivityCast(), ChatActivity.class);
+                            intent.putExtra(ARG_ON_LONG_CLICK_TEXT, textName);
+                            startActivity(intent);
+                        }
+                    })
+                    .show();
+
+        }
+    }
+
+    /**
+     * Returns the shared element that should be transitioned back to the previous Activity,
+     * or null if the view is not visible on the screen.
+     */
+    @Nullable
+    ImageView getCharacterImage() {
+        if (isViewInBounds(getActivity().getWindow().getDecorView(), mThumbnail)) {
+            return mThumbnail;
+        }
+        return null;
+    }
+
+    @Nullable
+    TextView getCharacterText() {
+        if (isViewInBounds(getActivity().getWindow().getDecorView(), mNameView)) {
+            return mNameView;
+        }
+        return null;
     }
 }

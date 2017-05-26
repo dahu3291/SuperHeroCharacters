@@ -11,4 +11,6 @@
     <string name="sign_out">Sign Out</string>
 
     <string name="comic_number_limit">10</string>
+    <string name="transition_photo">transition_photo</string>
+    <string name="transition_text">transition_text</string>
 </resources>
