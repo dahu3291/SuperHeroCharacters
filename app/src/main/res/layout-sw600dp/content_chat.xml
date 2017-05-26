@@ -8,6 +8,18 @@
     tools:context="com.ajibadedah.superherocharacters.firebase.ChatActivity"
     tools:showIn="@layout/activity_chat">
 
+    <!-- A small divider -->
+    <android.support.constraint.Guideline
+        android:id="@+id/start_divider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toStartOf="@+id/chat_container"
+        app:layout_constraintGuide_percent="0.25"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteX="148dp"
+        tools:layout_editor_absoluteY="0dp" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/chatRecyclerView"
         android:layout_width="0dp"
@@ -16,8 +28,8 @@
         android:stackFromBottom="false"
         android:transcriptMode="alwaysScroll"
         app:layout_constraintBottom_toTopOf="@+id/sendButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/end_divider"
+        app:layout_constraintStart_toEndOf="@+id/start_divider"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="8dp"
@@ -34,7 +46,7 @@
         android:hint="@string/chat_message_hint"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/sendButton"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/start_divider"
         tools:layout_editor_absoluteX="36dp" />
 
     <Button
@@ -44,8 +56,19 @@
         android:enabled="false"
         android:text="@string/send_button_label"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/end_divider"
         app:layout_constraintStart_toEndOf="@+id/chatEditText"
         tools:layout_editor_absoluteX="296dp" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/end_divider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.75"
+        app:layout_constraintStart_toEndOf="@+id/chatRecyclerView"
+        tools:layout_editor_absoluteX="444dp"
+        tools:layout_editor_absoluteY="0dp" />
 
 </android.support.constraint.ConstraintLayout>

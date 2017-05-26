@@ -2,7 +2,13 @@ package com.ajibadedah.superherocharacters;
 
 import android.content.Intent;
 import android.database.Cursor;
+
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.CursorLoader;
@@ -11,29 +17,42 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.ChangeBounds;
+import android.transition.Fade;
+import android.transition.TransitionSet;
+import android.transition.ChangeImageTransform;
+import android.transition.ChangeTransform;
 import android.transition.Slide;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 
 import com.ajibadedah.superherocharacters.data.CharacterContract.CharacterEntry;
+import com.ajibadedah.superherocharacters.firebase.ChatActivity;
 import com.ajibadedah.superherocharacters.sync.CharacterSyncManager;
 
 import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor>, CharacterComicAdapter.AdapterClickListener{
+        LoaderManager.LoaderCallbacks<Cursor>, CharacterComicAdapter.AdapterClickListener
+        , FragmentManager.OnBackStackChangedListener{
 
     public static final String STARTING_CHARACTER_ID = "character_id";
     static final String EXTRA_STARTING_CHARACTER_POSITION = "extra_starting_item_position";
     static final String EXTRA_CURRENT_CHARACTER_POSITION = "extra_current_item_position";
     private static final int ID_CHARACTER_LOADER = 44;
-    private CharacterComicAdapter mCharacterComicAdapter;
+    private static final String CHARACTER_DETAIL_FRAGMENT_TAG = "character_detail_fragment_tag";
 
+    private boolean mTwoPane;
+    private FloatingActionButton fab;
+
+    private CharacterComicAdapter mCharacterComicAdapter;
     private LinearLayoutManager layoutManager;
     private RecyclerView mRecyclerView;
     private Bundle mTmpReenterState;
@@ -93,6 +112,9 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 //        setExitSharedElementCallback(mCallback);
 
+        // Determine if you're creating a two-pane or single-pane display
+        mTwoPane = findViewById(R.id.detail_container) != null ;
+
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
         mCharacterComicAdapter = new CharacterComicAdapter(this, this, true);
@@ -101,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerView.setLayoutManager(layoutManager);
 
         CharacterSyncManager.getInstance(this);
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
         getSupportLoaderManager().initLoader(ID_CHARACTER_LOADER, null, this);
     }
 
@@ -112,6 +135,39 @@ public class MainActivity extends AppCompatActivity implements
         // dont animate more than we need to
         int stopPos = layoutManager.findLastVisibleItemPosition();
         mCharacterComicAdapter.setStopAnimPosition(stopPos);
+
+        if (mTwoPane){
+            fab = (FloatingActionButton) findViewById(R.id.fab);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                    startActivity(intent);
+                }
+            });
+        }
+
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.detail_container);
+        if (fragment != null) {
+            fab.setVisibility(View.VISIBLE);
+
+            ConstraintSet set = new ConstraintSet();
+            ConstraintLayout mConstraintLayout = (ConstraintLayout) findViewById(R.id.activity_main_layout);
+            set.clone(mConstraintLayout);
+            set.setGuidelinePercent(R.id.start_divider, 0.0f);
+            set.setGuidelinePercent(R.id.end_divider, 0.4f);
+            set.applyTo(mConstraintLayout);
+        } else {
+            if (fab != null ) fab.setVisibility(View.GONE);
+
+            ConstraintSet set = new ConstraintSet();
+            ConstraintLayout mConstraintLayout = (ConstraintLayout) findViewById(R.id.activity_main_layout);
+            set.clone(mConstraintLayout);
+            set.setGuidelinePercent(R.id.start_divider, 0.25f);
+            set.setGuidelinePercent(R.id.end_divider, 0.75f);
+            set.applyTo(mConstraintLayout);
+        }
     }
 
     @Override
@@ -164,12 +220,57 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void ItemClicked(Intent intent, ActivityOptionsCompat options) {
+    public void onBackStackChanged() {
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.detail_container);
+        if (fragment != null) {
+            ConstraintSet set = new ConstraintSet();
+            ConstraintLayout mConstraintLayout = (ConstraintLayout) findViewById(R.id.activity_main_layout);
+            set.clone(mConstraintLayout);
+            set.setGuidelinePercent(R.id.start_divider, 0.0f);
+            set.setGuidelinePercent(R.id.end_divider, 0.4f);
+            set.applyTo(mConstraintLayout);
+        } else {
+            ConstraintSet set = new ConstraintSet();
+            ConstraintLayout mConstraintLayout = (ConstraintLayout) findViewById(R.id.activity_main_layout);
+            set.clone(mConstraintLayout);
+            set.setGuidelinePercent(R.id.start_divider, 0.25f);
+            set.setGuidelinePercent(R.id.end_divider, 0.75f);
+            set.applyTo(mConstraintLayout);
+        }
+    }
+
+    @Override
+    public void ItemClicked(Intent intent, ActivityOptionsCompat options, int characterId) {
 //        Intent intent = new Intent(this, DetailActivity.class);
 //        intent.putExtra(STARTING_CHARACTER_ID, id);
-        if (!mIsDetailsActivityStarted) {
+        if (mTwoPane){
+            fab.setVisibility(View.VISIBLE);
+
+            DetailFragment newFragment = DetailFragment.newInstance(characterId);
+//            newFragment.setSharedElementEnterTransition(new DetailsTransition());
+            newFragment.setEnterTransition(new DetailsTransition());
+            newFragment.setExitTransition(new Fade());
+            newFragment.setSharedElementReturnTransition(new DetailsTransition());
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.detail_container, newFragment, CHARACTER_DETAIL_FRAGMENT_TAG)
+                    .addToBackStack(CHARACTER_DETAIL_FRAGMENT_TAG)
+                    .commit();
+        }
+        else if (!mIsDetailsActivityStarted) {
             mIsDetailsActivityStarted = true;
             startActivity(intent, options.toBundle());
+        }
+    }
+
+    private class DetailsTransition extends TransitionSet {
+        DetailsTransition() {
+            setOrdering(ORDERING_TOGETHER);
+            setDuration(500);
+            addTransition(new Slide(Gravity.BOTTOM));
+//            addTransition(new ChangeBounds()).
+//                    addTransition(new ChangeTransform()).
+//                    addTransition(new ChangeImageTransform());
         }
     }
 }

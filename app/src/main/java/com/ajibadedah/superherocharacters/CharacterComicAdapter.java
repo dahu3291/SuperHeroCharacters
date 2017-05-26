@@ -123,7 +123,7 @@ public class CharacterComicAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 //    }
 
     public interface AdapterClickListener {
-        void ItemClicked(Intent intent, ActivityOptionsCompat options);
+        void ItemClicked(Intent intent, ActivityOptionsCompat options, int id);
     }
 
     public class CharacterAdapterViewHolder extends RecyclerView.ViewHolder {
@@ -158,7 +158,7 @@ public class CharacterComicAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                     int i = getAdapterPosition();
                     mCursor.moveToPosition(i);
 
-                    int charId = mCursor.getInt(mCursor.getColumnIndex(
+                    int characterId = mCursor.getInt(mCursor.getColumnIndex(
                             CharacterContract.CharacterEntry._ID));
 
 //                    Pair<View, String> p1 = Pair.create((View) thumbnail, thumbnailTransitionName);
@@ -169,8 +169,8 @@ public class CharacterComicAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                             makeSceneTransitionAnimation(activity);
 
                     Intent intent = new Intent(mContext, DetailActivity.class);
-                    intent.putExtra(STARTING_CHARACTER_ID, charId);
-                    mAdapterItemListener.ItemClicked(intent, options);
+                    intent.putExtra(STARTING_CHARACTER_ID, characterId);
+                    mAdapterItemListener.ItemClicked(intent, options, characterId);
                 }
             });
 

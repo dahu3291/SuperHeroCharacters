@@ -1,6 +1,7 @@
 package com.ajibadedah.superherocharacters;
 
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ajibadedah.superherocharacters.data.CharacterContract.CharacterEntry;
+import com.ajibadedah.superherocharacters.firebase.ChatActivity;
 
 import java.util.List;
 import java.util.Map;
@@ -102,6 +104,16 @@ public class DetailActivity extends AppCompatActivity implements
                     int index = mCursor.getColumnIndex(CharacterEntry._ID);
                     mSelectedItemId = mCursor.getInt(index);
                 }
+            }
+        });
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(DetailActivity.this, ChatActivity.class);
+                startActivity(intent);
             }
         });
 

@@ -15,7 +15,7 @@
         <item name="android:windowReenterTransition">@transition/window_exit_transition</item>
         <item name="android:windowEnterTransition">@transition/window_enter_transition</item>
         <item name="android:windowReturnTransition">@transition/window_enter_transition</item>
-        <item name="android:windowSharedElementEnterTransition">@transition/shared_element</item>
+        <!--<item name="android:windowSharedElementEnterTransition">@transition/shared_element</item>-->
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

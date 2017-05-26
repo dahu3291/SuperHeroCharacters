@@ -19,6 +19,7 @@
         android:id="@+id/referenceTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin"
         android:layout_weight="0"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:visibility="gone"
@@ -28,6 +29,7 @@
         android:id="@+id/messageTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin"
         android:layout_weight="0"
         android:textAppearance="?android:attr/textAppearanceLarge"
         tools:text="Message" />
@@ -40,4 +42,4 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         tools:text="Name" />
 
-</LinearLayout>
+</LinearLayout >

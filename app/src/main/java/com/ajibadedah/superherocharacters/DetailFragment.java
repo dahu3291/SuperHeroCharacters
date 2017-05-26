@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -16,7 +14,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
 import android.transition.TransitionManager;
 import android.util.Log;
@@ -105,7 +102,7 @@ public class DetailFragment extends Fragment
         getLoaderManager().initLoader(ID_DETAIL_FRAGMENT_LOADER, null, this);
     }
 
-    public DetailActivity getActivityCast() {
+    public DetailActivity getDetailActivityCast() {
         return (DetailActivity) getActivity();
     }
 
@@ -124,17 +121,7 @@ public class DetailFragment extends Fragment
         mNameView.setTransitionName(newTransitionName);
 
 //        Toolbar toolbar = (Toolbar) mRootView.findViewById(R.id.toolbar);
-//        getActivityCast().setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) mRootView.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent intent = new Intent(getActivityCast(), ChatActivity.class);
-                startActivity(intent);
-            }
-        });
+//        getDetailActivityCast().setSupportActionBar(toolbar);
 
         bindViews();
         return mRootView;
@@ -159,7 +146,7 @@ public class DetailFragment extends Fragment
 
             Picasso.with(mRootView.getContext()).load(url).into(mThumbnail);
 
-            onLongClickImageUrl = mCursor.getString(index);
+            onLongClickImageUrl = url;
             onLongClickImageName = "Image of " + name;
             mThumbnail.setOnLongClickListener(this);
 
@@ -225,7 +212,7 @@ public class DetailFragment extends Fragment
             public boolean onPreDraw() {
                 mThumbnail.getViewTreeObserver().removeOnPreDrawListener(this);
 //                ActivityCompat.startPostponedEnterTransition(getActivity());
-                getActivityCast().startPostponedEnterTransition();
+                getActivity().startPostponedEnterTransition();
                 return true;
             }
         });
@@ -260,7 +247,7 @@ public class DetailFragment extends Fragment
                     .setAction("YES",  new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent intent = new Intent(getActivityCast(), ChatActivity.class);
+                            Intent intent = new Intent(getActivity(), ChatActivity.class);
                             intent.putExtra(ARG_ON_LONG_CLICK_URL, imageUrl);
                             startActivity(intent);
                         }
@@ -275,7 +262,7 @@ public class DetailFragment extends Fragment
                     .setAction("YES",  new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent intent = new Intent(getActivityCast(), ChatActivity.class);
+                            Intent intent = new Intent(getActivity(), ChatActivity.class);
                             intent.putExtra(ARG_ON_LONG_CLICK_TEXT, textName);
                             startActivity(intent);
                         }
