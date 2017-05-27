@@ -35,7 +35,6 @@ public class DetailActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>{
 
     private static final int ID_DETAIL_LOADER = 22;
-    private CharacterComicAdapter mCharacterComicAdapter;
     private MyPagerAdapter mPagerAdapter;
     private ViewPager mPager;
     private DetailFragment mCurrentDetailsFragment;

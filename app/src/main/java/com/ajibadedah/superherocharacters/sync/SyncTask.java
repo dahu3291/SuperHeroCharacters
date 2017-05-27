@@ -2,6 +2,7 @@ package com.ajibadedah.superherocharacters.sync;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 
 import static com.ajibadedah.superherocharacters.data.CharacterContract.*;
 
@@ -30,6 +31,8 @@ import retrofit2.Call;
  */
 
 public class SyncTask {
+    public static final String ACTION_DATA_UPDATED =
+            "com.ajibadedah.superherocharacters.sync.ACTION_DATA_UPDATED";
 
     static Gson gson = new GsonBuilder()
             .registerTypeAdapter(Character.class, new Character.CharacterTypeAdapter())
@@ -48,6 +51,10 @@ public class SyncTask {
         for (String name: names){
             getCharacterFromApi(context, name);
         }
+//        updateWidgets();
+        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED)
+                .setPackage(context.getPackageName());
+        context.sendBroadcast(dataUpdatedIntent);
 
     }
 
@@ -90,5 +97,12 @@ public class SyncTask {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void updateWidgets(Context context) {
+        // Setting the package ensures that only components in our app will receive the broadcast
+        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED)
+                .setPackage(context.getPackageName());
+        context.sendBroadcast(dataUpdatedIntent);
     }
 }

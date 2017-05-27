@@ -45,13 +45,10 @@ import static com.ajibadedah.superherocharacters.DetailFragment.ARG_ON_LONG_CLIC
 
 public class ChatActivity extends AppCompatActivity {
 
-
-    public static final String ANONYMOUS = "anonymous";
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 150;
 
     public static final int RC_SIGN_IN = 1;
 
-    private ListView mChatListView;
     private FirebaseRecyclerAdapter mChatAdapter;
     private ProgressBar mProgressBar;
     private EditText mChatEditText;
@@ -79,13 +76,13 @@ public class ChatActivity extends AppCompatActivity {
         detailUrl = getIntent().hasExtra(ARG_ON_LONG_CLICK_URL) ?
                 getIntent().getStringExtra(ARG_ON_LONG_CLICK_URL) : null;
 
-        mUsername = ANONYMOUS;
+        mUsername = getString(R.string.anonymous);
 
         // Initialize Firebase components
         FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
 
-        mChatDatabaseReference = mFirebaseDatabase.getReference().child("messages");
+        mChatDatabaseReference = mFirebaseDatabase.getReference().child(getString(R.string.fb_realtime_db_node_messages));
 
 //        mChatListView = (ListView) findViewById(R.id.chatListView);
         mChatEditText = (EditText) findViewById(R.id.chatEditText);
@@ -162,10 +159,10 @@ public class ChatActivity extends AppCompatActivity {
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) {
                 // Sign-in succeeded, set up the UI
-                Toast.makeText(this, "Signed in!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.signed_in, Toast.LENGTH_SHORT).show();
             } else if (resultCode == RESULT_CANCELED) {
                 // Sign in was canceled by the user, finish the activity
-                Toast.makeText(this, "Sign in canceled", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.sign_in_canceled, Toast.LENGTH_SHORT).show();
                 finish();
             }
         }
@@ -245,7 +242,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void onSignedOutCleanup() {
-        mUsername = ANONYMOUS;
+        mUsername = getString(R.string.anonymous);
         if (mChatAdapter != null)mChatAdapter.cleanup();
         detachDatabaseReadListener();
     }

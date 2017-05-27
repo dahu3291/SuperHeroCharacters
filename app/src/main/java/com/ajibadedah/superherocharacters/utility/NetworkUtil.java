@@ -35,7 +35,6 @@ public class NetworkUtil {
     private static final String TAG = NetworkUtil.class.getSimpleName();
 
     private static final String MARVEL_URL = "https://gateway.marvel.com:443/v1/public/";
-    private static final String QUERY_API = "api_key";
 
     private static final CharacterApi characterApi;
     private static final ComicApi comicApi;
@@ -63,17 +62,6 @@ public class NetworkUtil {
         characterApi = retrofit.create(CharacterApi.class);
     }
 
-    public interface CharacterApi {
-        @GET("characters")
-        Call<Data> getCharacter(@Query("name")  String name, @Query("ts") String timestamp
-                , @Query("apikey") String apikey, @Query("hash") String hashSignature);
-
-    }
-
-    public static CharacterApi getCharacterApi() {
-        return characterApi;
-    }
-
     static {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -97,6 +85,21 @@ public class NetworkUtil {
         comicApi = retrofit.create(ComicApi.class);
     }
 
+    public static CharacterApi getCharacterApi() {
+        return characterApi;
+    }
+
+    public static ComicApi getComicApi() {
+        return comicApi;
+    }
+
+    public interface CharacterApi {
+        @GET("characters")
+        Call<Data> getCharacter(@Query("name")  String name, @Query("ts") String timestamp
+                , @Query("apikey") String apikey, @Query("hash") String hashSignature);
+
+    }
+
     public interface ComicApi {
         @GET("characters/{id}/comics")
         Call<Data> getComics(@Path("id") String id, @Query("limit") String limit
@@ -104,27 +107,4 @@ public class NetworkUtil {
                 , @Query("hash") String hashSignature);
     }
 
-    public static ComicApi getComicApi() {
-        return comicApi;
-    }
-
-
-
-    public static URL buildUrlForMovies(Context context) {
-        Uri uri = Uri.parse(MARVEL_URL).buildUpon()
-                .appendQueryParameter(QUERY_API, "f8e4910346390a3041848244448b9e87")
-                .build();
-        return changeUriToURL(uri);
-    }
-
-    private static URL changeUriToURL(Uri uri){
-        try {
-            URL url = new URL(uri.toString());
-            Log.v(TAG, "URL: " + url);
-            return url;
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 }

@@ -2,4 +2,6 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="default_margin">8dp</dimen>
     <dimen name="card_view_margin">4dp</dimen>
+    <dimen name="character_item_image_size">50dp</dimen>
+    <dimen name="widget_name_size">50dp</dimen>
 </resources>

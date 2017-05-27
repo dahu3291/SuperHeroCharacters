@@ -29,9 +29,6 @@ import java.util.ArrayList;
 
 public class ComicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
-    private static final int ANIMATED_ITEMS_COUNT = 2;
-    private static int screenWidth = 0;
-    private int lastAnimatedPosition = -1;
     private ArrayList<Comic> mComics;
     private Context mContext;
     private ComicAdapter.AdapterClickListener mAdapterItemListener;
@@ -43,17 +40,6 @@ public class ComicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         this.mComics = comics;
     }
 
-    public static int getScreenHeight(Context c) {
-        if (screenWidth == 0) {
-            WindowManager wm = (WindowManager) c.getSystemService(Context.WINDOW_SERVICE);
-            Display display = wm.getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-            screenWidth = size.y;
-        }
-
-        return screenWidth;
-    }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -122,10 +108,7 @@ public class ComicAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             url = mComics.get(postion).getThumbnail().getFullUrl();
             Picasso.with(mContext).load(url).into(thumbnail);
 
-
-
             itemView.setOnLongClickListener(this);
-
         }
 
         @Override

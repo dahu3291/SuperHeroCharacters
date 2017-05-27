@@ -17,20 +17,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.transition.ChangeBounds;
 import android.transition.Fade;
 import android.transition.TransitionSet;
-import android.transition.ChangeImageTransform;
-import android.transition.ChangeTransform;
 import android.transition.Slide;
-import android.transition.TransitionManager;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.ImageView;
 
 import com.ajibadedah.superherocharacters.data.CharacterContract.CharacterEntry;
 import com.ajibadedah.superherocharacters.firebase.ChatActivity;
@@ -125,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements
         CharacterSyncManager.getInstance(this);
         getSupportFragmentManager().addOnBackStackChangedListener(this);
         getSupportLoaderManager().initLoader(ID_CHARACTER_LOADER, null, this);
+
     }
 
     @Override
@@ -148,26 +141,13 @@ public class MainActivity extends AppCompatActivity implements
             });
         }
 
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.detail_container);
-        if (fragment != null) {
-            fab.setVisibility(View.VISIBLE);
-
-            ConstraintSet set = new ConstraintSet();
-            ConstraintLayout mConstraintLayout = (ConstraintLayout) findViewById(R.id.activity_main_layout);
-            set.clone(mConstraintLayout);
-            set.setGuidelinePercent(R.id.start_divider, 0.0f);
-            set.setGuidelinePercent(R.id.end_divider, 0.4f);
-            set.applyTo(mConstraintLayout);
-        } else {
-            if (fab != null ) fab.setVisibility(View.GONE);
-
-            ConstraintSet set = new ConstraintSet();
-            ConstraintLayout mConstraintLayout = (ConstraintLayout) findViewById(R.id.activity_main_layout);
-            set.clone(mConstraintLayout);
-            set.setGuidelinePercent(R.id.start_divider, 0.25f);
-            set.setGuidelinePercent(R.id.end_divider, 0.75f);
-            set.applyTo(mConstraintLayout);
+        if (getIntent().hasExtra(STARTING_CHARACTER_ID)){
+            String stringId = getIntent().getStringExtra(STARTING_CHARACTER_ID);
+            int characterId = Integer.parseInt(stringId);
+            startDetailFragment(characterId);
         }
+
+        transitionMainActivityBounds();
     }
 
     @Override
@@ -221,8 +201,27 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onBackStackChanged() {
+        transitionMainActivityBounds();
+    }
+
+    @Override
+    public void ItemClicked(Intent intent, ActivityOptionsCompat options, int characterId) {
+//        Intent intent = new Intent(this, DetailActivity.class);
+//        intent.putExtra(STARTING_CHARACTER_ID, id);
+        if (mTwoPane){
+            startDetailFragment(characterId);
+        }
+        else if (!mIsDetailsActivityStarted) {
+            mIsDetailsActivityStarted = true;
+            startActivity(intent, options.toBundle());
+        }
+    }
+
+    private void transitionMainActivityBounds(){
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.detail_container);
         if (fragment != null) {
+            fab.setVisibility(View.VISIBLE);
+
             ConstraintSet set = new ConstraintSet();
             ConstraintLayout mConstraintLayout = (ConstraintLayout) findViewById(R.id.activity_main_layout);
             set.clone(mConstraintLayout);
@@ -230,6 +229,8 @@ public class MainActivity extends AppCompatActivity implements
             set.setGuidelinePercent(R.id.end_divider, 0.4f);
             set.applyTo(mConstraintLayout);
         } else {
+            if (fab != null ) fab.setVisibility(View.GONE);
+
             ConstraintSet set = new ConstraintSet();
             ConstraintLayout mConstraintLayout = (ConstraintLayout) findViewById(R.id.activity_main_layout);
             set.clone(mConstraintLayout);
@@ -239,28 +240,19 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public void ItemClicked(Intent intent, ActivityOptionsCompat options, int characterId) {
-//        Intent intent = new Intent(this, DetailActivity.class);
-//        intent.putExtra(STARTING_CHARACTER_ID, id);
-        if (mTwoPane){
-            fab.setVisibility(View.VISIBLE);
+    private void startDetailFragment(int characterId){
+        fab.setVisibility(View.VISIBLE);
 
-            DetailFragment newFragment = DetailFragment.newInstance(characterId);
+        DetailFragment newFragment = DetailFragment.newInstance(characterId);
 //            newFragment.setSharedElementEnterTransition(new DetailsTransition());
-            newFragment.setEnterTransition(new DetailsTransition());
-            newFragment.setExitTransition(new Fade());
-            newFragment.setSharedElementReturnTransition(new DetailsTransition());
+        newFragment.setEnterTransition(new DetailsTransition());
+        newFragment.setExitTransition(new Fade());
+        newFragment.setSharedElementReturnTransition(new DetailsTransition());
 
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.detail_container, newFragment, CHARACTER_DETAIL_FRAGMENT_TAG)
-                    .addToBackStack(CHARACTER_DETAIL_FRAGMENT_TAG)
-                    .commit();
-        }
-        else if (!mIsDetailsActivityStarted) {
-            mIsDetailsActivityStarted = true;
-            startActivity(intent, options.toBundle());
-        }
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.detail_container, newFragment, CHARACTER_DETAIL_FRAGMENT_TAG)
+                .addToBackStack(CHARACTER_DETAIL_FRAGMENT_TAG)
+                .commit();
     }
 
     private class DetailsTransition extends TransitionSet {

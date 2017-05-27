@@ -48,15 +48,12 @@ public class DetailFragment extends Fragment
     public static final String ARG_ON_LONG_CLICK_TEXT = "arg_on_long_click_text";
     public static final String ARG_ON_LONG_CLICK_URL = "arg_on_long_click_url";
     private static final String TAG = "ArticleDetailFragment";
-    private static final String ARG_CHARACTER_POSITION = "arg_character_position";
-    private static final String ARG_STARTING_CHARACTER_POSITION = "arg_starting_character_position";
     private static final int ID_DETAIL_FRAGMENT_LOADER = 11;
     private Cursor mCursor;
     private String mItemId;
     private View mRootView;
     private ImageView mThumbnail;
     private TextView mNameView;
-    private ComicAdapter mComicAdapter;
 
     private String onLongClickText;
     private String onLongClickImageUrl;
@@ -102,10 +99,6 @@ public class DetailFragment extends Fragment
         getLoaderManager().initLoader(ID_DETAIL_FRAGMENT_LOADER, null, this);
     }
 
-    public DetailActivity getDetailActivityCast() {
-        return (DetailActivity) getActivity();
-    }
-
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -147,7 +140,7 @@ public class DetailFragment extends Fragment
             Picasso.with(mRootView.getContext()).load(url).into(mThumbnail);
 
             onLongClickImageUrl = url;
-            onLongClickImageName = "Image of " + name;
+            onLongClickImageName = getString(R.string.image_of) + name;
             mThumbnail.setOnLongClickListener(this);
 
             mNameView.setText(name);
@@ -199,7 +192,7 @@ public class DetailFragment extends Fragment
                 comics.add(gson.fromJson(array.get(i), Comic.class));
             }
 
-            mComicAdapter = new ComicAdapter(getActivity(), this, comics);
+            ComicAdapter mComicAdapter = new ComicAdapter(getActivity(), this, comics);
             GridLayoutManager layoutManager =
                     new GridLayoutManager(mRootView.getContext(), 2, GridLayoutManager.VERTICAL, false);
             RecyclerView recyclerView = (RecyclerView) mRootView.findViewById(R.id.comic_list_recycler);
@@ -243,8 +236,8 @@ public class DetailFragment extends Fragment
     public void FirebaseChat(View view, String imageName, final String imageUrl, final String textName){
 
         if (view instanceof ImageView) {
-            Snackbar.make(view, "Chat about " + imageName, Snackbar.LENGTH_LONG)
-                    .setAction("YES",  new View.OnClickListener() {
+            Snackbar.make(view, getString(R.string.chat_about) + imageName, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.yes,  new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             Intent intent = new Intent(getActivity(), ChatActivity.class);
@@ -258,8 +251,8 @@ public class DetailFragment extends Fragment
         if(view instanceof TextView){
             TextView text = (TextView) view;
             onLongClickText = text.getText().toString();
-            Snackbar.make(view, "Chat about " + textName, Snackbar.LENGTH_LONG)
-                    .setAction("YES",  new View.OnClickListener() {
+            Snackbar.make(view, getString(R.string.chat_about) + textName, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.yes,  new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             Intent intent = new Intent(getActivity(), ChatActivity.class);

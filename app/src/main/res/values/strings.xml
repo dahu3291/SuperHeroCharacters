@@ -14,4 +14,16 @@
     <string name="transition_photo">transition_photo</string>
     <string name="transition_text">transition_text</string>
     <string name="chat_message_hint">Write a message, the send</string>
+    <string name="empty_character_list">List is empty, try checking internet</string>
+    <string name="title_widget_detail">widget_receiver_title</string>
+    <string name="signed_in">Signed in!</string>
+    <string name="sign_in_canceled">Sign in canceled</string>
+    <string name="fb_realtime_db_node_messages">messages</string>
+    <string name="anonymous">anonymous</string>
+    <string name="chat_about">Chat about</string>
+    <string name="yes">YES</string>
+    <string name="image_of">Image of</string>
+    <string name="chat_name_text">Name</string>
+    <string name="press_to_chat_description">Press to Chat</string>
+    <string name="chat_on_text_description">Long press on text to chat, confirm on snakbar bellow</string>
 </resources>

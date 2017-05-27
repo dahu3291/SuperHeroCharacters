@@ -65,6 +65,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
+        android:contentDescription="@string/press_to_chat_description"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/fab_divider"
         app:layout_constraintEnd_toEndOf="parent"
