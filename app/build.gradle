@@ -5,7 +5,7 @@ android {
         config {
             keyAlias 'cap'
             keyPassword 'capstonekey'
-            storeFile file('/Users/ajibade/AndroidStudioProjects/SuperHeroCharacters/keystore.jks')
+            storeFile file("$rootDir/keystore.jks")
             storePassword 'capstonekey'
         }
     }

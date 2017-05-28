@@ -224,21 +224,6 @@ public class ChatActivity extends AppCompatActivity {
         };
         recycler.setAdapter(mChatAdapter);
 
-//        if (mChildEventListener == null) {
-//            mChildEventListener = new ChildEventListener() {
-//                @Override
-//                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//                    Chat chat = dataSnapshot.getValue(Chat.class);
-//                    mChatAdapter.add(chat);
-//                }
-//
-//                public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
-//                public void onChildRemoved(DataSnapshot dataSnapshot) {}
-//                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
-//                public void onCancelled(DatabaseError databaseError) {}
-//            };
-//            mChatDatabaseReference.addChildEventListener(mChildEventListener);
-//        }
     }
 
     private void onSignedOutCleanup() {
@@ -254,7 +239,7 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-    private static class ChatHolder extends RecyclerView.ViewHolder {
+    public static class ChatHolder extends RecyclerView.ViewHolder {
         private final CustomImageView mThumbnail;
         private final TextView mNameField;
         private final TextView mMessageField;
